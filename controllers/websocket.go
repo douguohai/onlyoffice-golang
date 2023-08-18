@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"bytes"
-	"github.com/astaxie/beego"
+	"github.com/beego/beego/v2/server/web"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 )
 
 type WebsocketController struct {
-	beego.Controller
+	web.Controller
 }
 
 var hub = newHub()

@@ -3,10 +3,10 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/config"
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/server/web"
 	"github.com/douguohai/onlyoffice-golang/base"
 	"github.com/douguohai/onlyoffice-golang/models"
 	"github.com/douguohai/onlyoffice-golang/utils"
@@ -18,7 +18,7 @@ import (
 )
 
 type OnlyController struct {
-	beego.Controller
+	web.Controller
 }
 
 // CommonCallback 通用回调状态

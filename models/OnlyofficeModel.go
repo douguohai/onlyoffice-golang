@@ -2,9 +2,9 @@ package models
 
 import (
 	"fmt"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/server/web"
 	_ "github.com/lib/pq"
 	"time"
 )
@@ -31,11 +31,12 @@ type OnlyHistory struct {
 }
 
 func init() {
-	dbHost := beego.AppConfig.String("dbHost")
-	dbName := beego.AppConfig.String("dbName")
-	dbPort := beego.AppConfig.String("dbPort")
-	dbUser := beego.AppConfig.String("dbUser")
-	dbPassword := beego.AppConfig.String("dbPassword")
+
+	dbHost, _ := web.AppConfig.String("dbHost")
+	dbName, _ := web.AppConfig.String("dbName")
+	dbPort, _ := web.AppConfig.String("dbPort")
+	dbUser, _ := web.AppConfig.String("dbUser")
+	dbPassword, _ := web.AppConfig.String("dbPassword")
 
 	orm.RegisterDataBase("default", "postgres", fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", dbUser, dbPassword, dbName, dbHost, dbPort))
 	// set default database
@@ -107,7 +108,7 @@ func GetLastHistoryByAttachId(attachId int64) (history OnlyHistory, err error) {
 // UpdateFileUrlAndUpdateTime 更新文件地址和更新时间
 func UpdateFileUrlAndUpdateTime(attachId int64, fileName string) (int64, error) {
 	o := orm.NewOrm()
-	err := o.Begin()
+	tx, err := o.Begin()
 	if err != nil {
 		logs.Error("start the transaction failed")
 		return 0, err
@@ -120,10 +121,10 @@ func UpdateFileUrlAndUpdateTime(attachId int64, fileName string) (int64, error) 
 	}
 	id, err := o.Update(&OnlyAttachment{Id: attachId, FileName: fileName, Updated: time.Now()}, "FileName", "Updated")
 	if err != nil {
-		err = o.Rollback()
+		err = tx.Rollback()
 		logs.Error("更新附件异常")
 		return 0, err
 	}
-	err = o.Commit()
+	err = tx.Commit()
 	return id, err
 }
