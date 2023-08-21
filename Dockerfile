@@ -26,7 +26,7 @@ EXPOSE 8080
 
 ENV documentServer http://192.168.1.123:30080
 ENV serverUrl http://192.168.1.123:18080
-ENV wsServer 192.168.1.123:18080
+ENV wsServer ws://192.168.1.123:18080/ws
 ENV dbHost 192.168.1.183
 ENV dbName doc
 ENV dbPort 5432
