@@ -83,7 +83,7 @@
 
 
       function connectWebSocket() {
-          var socket = new WebSocket("ws://{{.wsServer}}/ws?id=3");
+          var socket = new WebSocket("{{.wsServer}}?id="+docId);
 
           socket.onopen = function () {
               console.log("WebSocket连接已建立");
