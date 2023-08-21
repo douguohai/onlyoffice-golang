@@ -12,4 +12,14 @@ docker build -t douguohai/onlyoffice-golang:v11 .
 docker run -d -p 30081:8080 -e serverUrl=https://q.sss-xtm.com:30081 -e wsServer=wss://q.sss-xtm.com:30081/ws -e documentServer=https://q.sss-xtm.com:30080 -e dbHost=192.168.10.240 -e dbPassword=Xtm@123456 douguohai/onlyoffice-golang:v12
 ```
 
+#### 上传文件，获取访问连接
+![img.png](document/img/img_upload.png)
+
+#### 获取下载文档连接
+![img.png](document/img/img_download.png)
+
+#### 强行覆盖文件内容
+![img.png](document/img/img_overwrite.png)
+
+
 
