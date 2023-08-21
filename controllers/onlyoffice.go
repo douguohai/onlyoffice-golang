@@ -115,9 +115,6 @@ func init() {
 	}
 }
 
-// OnlyOffice 协作页面的显示
-// 补充权限判断
-// 补充token
 func (c *OnlyController) OnlyOffice() {
 	//pid转成64为
 	docId, err := c.GetInt64(":id")

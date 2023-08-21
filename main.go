@@ -19,6 +19,10 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
 		AllowCredentials: true,
 	}))
+	if web.BConfig.RunMode == "dev" {
+		web.BConfig.WebConfig.DirectoryIndex = true
+		web.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+	}
 	web.SetStaticPath("/static", "static")
 	web.Run()
 }
