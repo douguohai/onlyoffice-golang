@@ -57,7 +57,8 @@
                 "forcesave": true,
                 "goback": {
                   "text": "Go to Documents",
-                  "url": "http://www.baidu.com"
+                  "url": "{{.serverUrl}}/office/{{.Doc.Id}}",
+                  "blank":false
                 },
                 "zoom": 100,
         	},

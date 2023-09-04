@@ -10,6 +10,8 @@ docker run --name postgres -e POSTGRES_PASSWORD=woshidoudou -p 5432:5432 -d post
 docker build -t douguohai/onlyoffice-golang:v11 . 
 
 docker run -d -p 30081:8080 -e serverUrl=https://q.sss-xtm.com:30081 -e wsServer=wss://q.sss-xtm.com:30081/ws -e documentServer=https://q.sss-xtm.com:30080 -e dbHost=192.168.10.240 -e dbPassword=Xtm@123456 douguohai/onlyoffice-golang:v12
+
+docker run -i -t -d --restart=always --name onlyoffice-documentServer-server -p 30080:80  douguohai/onlyoffice-documentserver:7.1.1.76
 ```
 
 #### 上传文件，获取访问连接

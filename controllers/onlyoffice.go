@@ -133,7 +133,7 @@ func (c *OnlyController) OnlyOffice() {
 		return
 	}
 
-	c.Data["Username"] = "tianwen"
+	c.Data["Username"] = "打工人"
 
 	c.Data["Mode"] = "edit"
 	c.Data["Edit"] = true
