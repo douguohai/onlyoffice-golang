@@ -14,6 +14,7 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -85,6 +86,8 @@ const savePath = "./static/"
 var serverUrl = ""
 var wsServer = ""
 var documentServer = ""
+var innerDocumentServer = "undefined"
+var callBackUrl = ""
 
 func init() {
 	//取得客户端用户名
@@ -112,6 +115,24 @@ func init() {
 	} else {
 		documentServer = val
 		logs.Info("[文档服务器访问地址 %s]", val)
+	}
+	val, err = config.String("callBackUrl")
+	if err != nil {
+		logs.Error("[文档服务器回调地址 %s]")
+	} else {
+		callBackUrl = val
+		logs.Info("[文档服务器内网回调地址 %s]", val)
+	}
+	val, err = config.String("innerDocumentServer")
+	if err != nil {
+		logs.Error("[内网文档服务器地址 %s]")
+	} else {
+		if val == "undefined" {
+			innerDocumentServer = documentServer
+		} else {
+			innerDocumentServer = val
+		}
+		logs.Info("[内网文档服务器地址 %s]", val)
 	}
 }
 
@@ -145,6 +166,7 @@ func (c *OnlyController) OnlyOffice() {
 	c.Data["serverUrl"] = serverUrl
 	c.Data["wsServer"] = wsServer
 	c.Data["documentServer"] = documentServer
+	c.Data["callBackUrl"] = callBackUrl
 
 	if path.Ext(attachment.FileName) == ".docx" || path.Ext(attachment.FileName) == ".DOCX" {
 		c.Data["fileType"] = "docx"
@@ -218,8 +240,9 @@ func (c *OnlyController) AddOnlyAttachment() {
 		c.ServeJSON()
 		return
 	}
+
 	if h != nil {
-		fileName := strconv.FormatInt(time.Now().Unix(), 10) + path.Ext(h.Filename)
+		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + path.Ext(h.Filename)
 		if c.SaveToFile("file", savePath+fileName) != nil {
 			c.Data["json"] = base.BuildResult(-1, "转储上传文件失败")
 			c.ServeJSON()
@@ -369,8 +392,9 @@ func (c *OnlyController) DocCallback() {
 	} else if callback.Status == 6 {
 		var editHasSaved EditHasSaved
 		_ = json.Unmarshal(c.Ctx.Input.RequestBody, &editHasSaved)
+		downloadUrl := strings.Replace(editHasSaved.Url, documentServer, innerDocumentServer, -1)
 		//下载文件到本地
-		err := utils.DownloadFile(editHasSaved.Url, savePath+attachment.FileName)
+		err := utils.DownloadFile(downloadUrl, savePath+attachment.FileName)
 		if err != nil {
 			logs.Error(err)
 		} else {
@@ -394,8 +418,9 @@ func (c *OnlyController) DocCallback() {
 		if err != nil {
 			logs.Error("[状态2-回调函数 解析回调异常]： %v", err)
 		}
+		downloadUrl := strings.Replace(editHasPrepareSave.Url, documentServer, innerDocumentServer, -1)
 		//下载文件到本地
-		err := utils.DownloadFile(editHasPrepareSave.Url, savePath+attachment.FileName)
+		err := utils.DownloadFile(downloadUrl, savePath+attachment.FileName)
 		if err != nil {
 			logs.Error(err)
 		} else {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -33,6 +34,7 @@ func GetParams(urlString string) (map[string]string, error) {
 
 // DownloadFile 定义一个名为 DownloadFile 的工具函数，接收一个 URL 字符串和目标文件路径作为参数，并下载文件保存到本地
 func DownloadFile(url string, filePath string) error {
+	fmt.Printf("[下载文件] 资源路径 %v 存储地址:%v", url, filePath)
 	// 发起 GET 请求获取文件内容
 	response, err := http.Get(url)
 	if err != nil {
