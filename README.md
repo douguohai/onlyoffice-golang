@@ -40,5 +40,3 @@ docker run -i -t -d --restart=always --name onlyoffice-documentServer-server -p 
 #### 强行覆盖文件内容
 ![img.png](document/img/img_overwrite.png)
 
-
-

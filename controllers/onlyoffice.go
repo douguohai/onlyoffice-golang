@@ -334,7 +334,7 @@ func (c *OnlyController) OverwriteDoc() {
 		return
 	}
 	if h != nil {
-		fileName := strconv.FormatInt(time.Now().Unix(), 10) + path.Ext(h.Filename)
+		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + path.Ext(h.Filename)
 		if c.SaveToFile("file", savePath+fileName) != nil {
 			c.Data["json"] = base.BuildResult(-1, "转储上传文件失败")
 			c.ServeJSON()
@@ -378,6 +378,14 @@ func (c *OnlyController) DocCallback() {
 		c.ServeJSON()
 		return
 	}
+	name := c.GetString("name", "")
+	if name != attachment.FileName {
+		logs.Error("[通用-回调函数 当前文档被强行覆盖] 放弃此次回调 %v", docId)
+		c.Data["json"] = map[string]interface{}{"error": 0}
+		c.ServeJSON()
+		return
+	}
+
 	var callback CommonCallback
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &callback)
 	if err != nil {

@@ -42,7 +42,7 @@
             },
         "documentType": "{{.documentType}}",
         "editorConfig": {
-          "callbackUrl": "{{.callBackUrl}}/url-to-callback?id={{.Doc.Id}}",
+          "callbackUrl": "{{.callBackUrl}}/url-to-callback?id={{.Doc.Id}}&name={{.Doc.FileName}}",
           "createUrl": "https://example.com/url-to-create-document/",
           "user": {
              "id": {{.Uid}},
