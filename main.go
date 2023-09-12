@@ -3,8 +3,10 @@ package main
 import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
+	"github.com/beego/beego/v2/server/web/context"
 	"github.com/beego/beego/v2/server/web/filter/cors"
 	_ "github.com/douguohai/onlyoffice-golang/routers"
+	"net/http"
 )
 
 func main() {
@@ -23,6 +25,14 @@ func main() {
 		web.BConfig.WebConfig.DirectoryIndex = true
 		web.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
+
+	// 添加静态资源拦截器
+	web.InsertFilter("/static", web.BeforeStatic, func(ctx *context.Context) {
+		if ctx.Request.RequestURI == "/static" || ctx.Request.RequestURI == "/static/" {
+			ctx.Abort(http.StatusUnauthorized, "权限不足")
+		}
+	})
+
 	web.SetStaticPath("/static", "static")
 	web.Run()
 }
