@@ -357,7 +357,12 @@ func (c *OnlyController) OverwriteDoc() {
 	}
 	str, err := json.Marshal(msg)
 	if err == nil {
-		hub.broadcast <- str
+		go func() {
+			fmt.Println("[通知前端刷新]-[延迟两秒]")
+			time.Sleep(2 * time.Second)
+			hub.broadcast <- str
+		}()
+
 	}
 
 }

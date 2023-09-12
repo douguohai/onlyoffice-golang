@@ -40,3 +40,10 @@ docker run -i -t -d --restart=always --name onlyoffice-documentServer-server -p 
 #### 强行覆盖文件内容
 ![img.png](document/img/img_overwrite.png)
 
+
+
+docker run -d -p 30081:8080 --restart=always -e serverUrl=https://minio.sss-xtm.com:30081 -e wsServer=wss://minio.sss-xtm.com:30081/ws -e documentServer=https://minio.sss-xtm.com:30080 -e callBackUrl=http://192.168.10.241:30081 -e innerDocumentServer=http://192.168.10.241:30080  -e dbHost=192.168.10.240 -e dbPassword=Xtm@123456  -v /data/onlyoffice-golang/static:/app/static douguohai/onlyoffice-golang:v20
+
+
+
+
