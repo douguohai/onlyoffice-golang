@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/config"
@@ -142,7 +143,7 @@ func (c *OnlyController) OnlyOffice() {
 	if err != nil {
 		logs.Error(err)
 		c.Data["json"] = base.BuildResult(-1, "文件id参数存在问题")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	//根据附件id取得附件的详细信息
@@ -150,7 +151,7 @@ func (c *OnlyController) OnlyOffice() {
 	if err != nil {
 		logs.Error(err)
 		c.Data["json"] = base.BuildResult(-1, "根据文档id未查询到当前文档")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 
@@ -237,15 +238,15 @@ func (c *OnlyController) AddOnlyAttachment() {
 	_, h, err := c.GetFile("file")
 	if err != nil {
 		c.Data["json"] = base.BuildResult(-1, "获取上传文件失败")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 
 	if h != nil {
-		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + path.Ext(h.Filename)
+		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + utils.GenerateRandomString(5) + path.Ext(h.Filename)
 		if c.SaveToFile("file", savePath+fileName) != nil {
 			c.Data["json"] = base.BuildResult(-1, "转储上传文件失败")
-			c.ServeJSON()
+			_ = c.ServeJSON()
 			return
 		}
 		//保存附件
@@ -265,7 +266,7 @@ func (c *OnlyController) AddOnlyAttachment() {
 				},
 			}
 		}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 	}
 }
 
@@ -275,14 +276,14 @@ func (c *OnlyController) DownloadDoc() {
 	docId, err := c.GetInt64(":id")
 	if err != nil {
 		c.Data["json"] = base.BuildResult(-1, "文件id参数存在问题")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	//根据附件id取得附件的详细信息
 	attachment, err := models.GetOnlyAttachmentById(docId)
 	if err != nil {
 		c.Data["json"] = base.BuildResult(-1, "根据id查询不到该文件")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	var downloadDocVo = base.DownloadDocVo{
@@ -300,9 +301,9 @@ func (c *OnlyController) DownloadDoc() {
 			}
 		}
 	} else {
-		if err != orm.ErrNoRows {
+		if !errors.Is(err, orm.ErrNoRows) {
 			c.Data["json"] = base.BuildResult(-1, "获取文档信息失败")
-			c.ServeJSON()
+			_ = c.ServeJSON()
 			return
 		}
 	}
@@ -313,7 +314,7 @@ func (c *OnlyController) DownloadDoc() {
 			ErrMessage: "操作成功",
 		},
 	}
-	c.ServeJSON()
+	_ = c.ServeJSON()
 	return
 }
 
@@ -324,20 +325,20 @@ func (c *OnlyController) OverwriteDoc() {
 	if err != nil {
 		logs.Error(err)
 		c.Data["json"] = base.BuildResult(-1, "文件id参数存在问题")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	_, h, err := c.GetFile("file")
 	if err != nil {
 		c.Data["json"] = base.BuildResult(-1, "获取上传文件失败")
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	if h != nil {
-		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + path.Ext(h.Filename)
+		fileName := strconv.FormatInt(time.Now().UnixNano(), 10) + utils.GenerateRandomString(5) + path.Ext(h.Filename)
 		if c.SaveToFile("file", savePath+fileName) != nil {
 			c.Data["json"] = base.BuildResult(-1, "转储上传文件失败")
-			c.ServeJSON()
+			_ = c.ServeJSON()
 			return
 		}
 		//根据id修改附件名称
@@ -349,7 +350,7 @@ func (c *OnlyController) OverwriteDoc() {
 		} else {
 			c.Data["json"] = base.BuildResult(0, "更新文档信息成功")
 		}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 	}
 	msg := base.Message{
 		Type: 0,
@@ -380,14 +381,14 @@ func (c *OnlyController) DocCallback() {
 	if err != nil {
 		logs.Error("[通用-回调函数 解析回调异常] 查询不到该文档 %v", docId)
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 	name := c.GetString("name", "")
 	if name != attachment.FileName {
 		logs.Error("[通用-回调函数 当前文档被强行覆盖] 放弃此次回调 %v", docId)
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	}
 
@@ -400,7 +401,7 @@ func (c *OnlyController) DocCallback() {
 	}
 	if callback.Status == 1 || callback.Status == 4 {
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	} else if callback.Status == 6 {
 		var editHasSaved EditHasSaved
@@ -424,7 +425,7 @@ func (c *OnlyController) DocCallback() {
 			}
 		}
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 	} else if callback.Status == 2 {
 		var editHasPrepareSave EditHasPrepareSave
 		err = json.Unmarshal(c.Ctx.Input.RequestBody, &editHasPrepareSave)
@@ -450,7 +451,7 @@ func (c *OnlyController) DocCallback() {
 			}
 		}
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 		return
 	} else if callback.Status == 3 {
 		err = models.UpdateOnlyAttachmentTime(docId)
@@ -458,9 +459,9 @@ func (c *OnlyController) DocCallback() {
 			logs.Error(err)
 		}
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 	} else {
 		c.Data["json"] = map[string]interface{}{"error": 0}
-		c.ServeJSON()
+		_ = c.ServeJSON()
 	}
 }
