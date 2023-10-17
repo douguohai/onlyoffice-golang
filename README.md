@@ -1,4 +1,5 @@
 # onlyoffice-golang
+
 基于golang go语言（beego框架）下的ONLYOFFICE Document Server二次开发。
 主要功能为文档的上传、预览、覆盖、回调等功能。
 
@@ -16,9 +17,13 @@
 |      serverUrl      |     当前服务外网http访问地址     | true  |
 |      wsServer       |  当前服务外网访websocket访问地址  | true  |
 |     callBackUrl     | 文档服务器必需保存回调地址，建议填写内网地址 | true  |
-
+|      redisAuth      |  是否开启redis认证，默认false   | false |
+|      redisHost      |       redis主机地址        | false |
+|    redisPassword    |       redis认证密码        | false |
+|       redisDB       |      redis使用的库默认0      | false |
 
 #### 相关脚本
+
 ```bash
 docker run -i -t -d --restart=always --name onlyoffice-documentServer-server -p 30080:80 -e REDIS_SERVER_HOST=192.168.10.239 -e REDIS_SERVER_PORT=6379 -e REDIS_SERVER_PASS=redis2020! -e DB_TYPE=postgres -e DB_HOST=192.168.10.240 -e DB_PORT=5432 -e DB_NAME=document -e DB_USER=postgres -e DB_PWD=Xtm@123456 douguohai/onlyoffice-documentserver:7.1.1.76
 
@@ -31,18 +36,35 @@ docker run -d -p 30081:8080 --restart=always -e serverUrl=https://p.sss-xtm.com:
 docker run -i -t -d --restart=always --name onlyoffice-documentServer-server -p 30080:80  douguohai/onlyoffice-documentserver:7.1.1.76
 ```
 
-#### 上传文件，获取访问连接
+#### redisAuth 是否开启redis认证，默认false
+
+>  认证机制，只做了简单的认证，即使用redis判断redis中是否存在该token的key,新增文件、覆盖文件、获取文件下载地址，需要在请求头添加Token；
+预览文件时，为方便操作在请求连接上拼接字符串，如 http://192.168.1.123:8080/office/19?Token=passwd ;
+注意 redisAuth=true时，必须配置 redisHost、 redisPassword、redisDB 三个属性，并保证redis可以正常连接
+
+#### 上传文件，获取访问连接(redisAuth=true，需要添加请求头Token)
+
 ![img.png](document/img/img_upload.png)
 
-#### 获取下载文档连接
+#### 获取下载文档连接(redisAuth=true，需要添加请求头Token)
+
 ![img.png](document/img/img_download.png)
 
-#### 强行覆盖文件内容
+#### 强行覆盖文件内容(redisAuth=true，需要添加请求头Token)
+
 ![img.png](document/img/img_overwrite.png)
 
+#### 预览上传的文件(redisAuth=true，连接需要拼接?Token=${Token})
+
+![img.png](document/img/img_preview.png)
+
+docker run -d -p 30081:8080 --restart=always -e serverUrl=https://minio.sss-xtm.com:30081 -e dbName=doc -e wsServer=wss:
+//minio.sss-xtm.com:30081/ws -e documentServer=https://minio.sss-xtm.com:30080 -e
+callBackUrl=http://192.168.10.241:30081 -e innerDocumentServer=http://192.168.10.241:30080  -e dbHost=192.168.10.240 -e
+dbPassword=Xtm@123456 -v /data/onlyoffice-golang/static:/app/static douguohai/onlyoffice-golang:v22
 
 
-docker run -d -p 30081:8080 --restart=always -e serverUrl=https://minio.sss-xtm.com:30081 -e wsServer=wss://minio.sss-xtm.com:30081/ws -e documentServer=https://minio.sss-xtm.com:30080 -e callBackUrl=http://192.168.10.241:30081 -e innerDocumentServer=http://192.168.10.241:30080  -e dbHost=192.168.10.240 -e dbPassword=Xtm@123456  -v /data/onlyoffice-golang/static:/app/static douguohai/onlyoffice-golang:v21
+
 
 
 
