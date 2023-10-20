@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/logs"
@@ -30,6 +31,20 @@ type OnlyHistory struct {
 	Created       time.Time `orm:"type(datetime)"`
 }
 
+// App 应用信息
+type App struct {
+	Id       int64
+	AppId    string `orm:"unique"`
+	CheckUrl string
+	Status   int       `default:"0"` //状态删除 0有效 1无效
+	Expires  time.Time `orm:"type(datetime)"`
+	Created  time.Time `orm:"type(datetime)"`
+}
+
+func (flow *App) TableName() string {
+	return "app"
+}
+
 func init() {
 
 	dbHost, _ := web.AppConfig.String("dbHost")
@@ -41,7 +56,7 @@ func init() {
 	orm.RegisterDataBase("default", "postgres", fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", dbUser, dbPassword, dbName, dbHost, dbPort))
 	// set default database
 	// register model
-	orm.RegisterModel(new(OnlyAttachment), new(OnlyHistory))
+	orm.RegisterModel(new(OnlyAttachment), new(OnlyHistory), new(App))
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -127,4 +142,16 @@ func UpdateFileUrlAndUpdateTime(attachId int64, fileName string) (int64, error) 
 	}
 	err = tx.Commit()
 	return id, err
+}
+
+// GetAppById 根据appid查询相关服务
+func GetAppById(appId string) (App, error) {
+	app := App{}
+	o := orm.NewOrm()
+	err := o.QueryTable("app").Filter("app_id", appId).Filter("status", 0).One(&app)
+	if err != nil {
+		return app, errors.New("非法appId")
+	} else {
+		return app, nil
+	}
 }

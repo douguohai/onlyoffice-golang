@@ -10,6 +10,11 @@ type Result struct {
 	ErrMessage interface{} `json:"errMessage"`
 }
 
+type CheckResult struct {
+	Code       interface{} `json:"code"`
+	ErrMessage interface{} `json:"msg"`
+}
+
 func (r Result) ToJSONStr() string {
 	jsonBytes, err := json.Marshal(r)
 	if err != nil {
