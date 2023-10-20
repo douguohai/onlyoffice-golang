@@ -13,32 +13,32 @@ import (
 // OnlyAttachment 附件
 type OnlyAttachment struct {
 	Id         int64
-	FileName   string
-	OriginName string
-	Created    time.Time `orm:"auto_now_add;type(datetime)"`
-	Updated    time.Time `orm:"auto_now;type(datetime)"`
+	FileName   string    `orm:"description(文件名称)"`
+	OriginName string    `orm:"description(文件原始名称)"`
+	Created    time.Time `orm:"auto_now_add;type(datetime);description(创建时间)"`
+	Updated    time.Time `orm:"auto_now;type(datetime);description(修改时间)"`
 }
 
 // OnlyHistory 历史版本
 type OnlyHistory struct {
 	Id            int64
-	AttachId      int64
-	ServerVersion string
-	FileUrl       string
-	ChangesUrl    string    //`orm:"null"`
-	HistoryKey    string    `orm:"sie(19)"`
-	Expires       time.Time `orm:"type(datetime)"`
-	Created       time.Time `orm:"type(datetime)"`
+	AttachId      int64     `orm:"description(关联附件id)"`
+	ServerVersion string    `orm:"description(文档服务器服务版本)"`
+	FileUrl       string    `orm:"description(文件下载连接)"`
+	ChangesUrl    string    `orm:"description(文件变化下载连接)"`
+	HistoryKey    string    `orm:"sie(19);description(文档服务器key)"`
+	Expires       time.Time `orm:"type(datetime);description(过期时间)"`
+	Created       time.Time `orm:"type(datetime);description(创建时间)"`
 }
 
 // App 应用信息
 type App struct {
 	Id       int64
-	AppId    string `orm:"unique"`
-	CheckUrl string
-	Status   int       `default:"0"` //状态删除 0有效 1无效
-	Expires  time.Time `orm:"type(datetime)"`
-	Created  time.Time `orm:"type(datetime)"`
+	AppId    string    `orm:"unique;description(应用名称)"`
+	CheckUrl string    `orm:"description(核查url)"`
+	Status   int       `orm:"auto_now_add;default:0;description(状态删除 0有效 1无效)"`
+	UpdateAt time.Time `orm:"auto_now_add;type(datetime); description(修改时间)"`
+	CreateAt time.Time `orm:"auto_now_add;type(datetime);description(创建时间)"`
 }
 
 func (flow *App) TableName() string {
