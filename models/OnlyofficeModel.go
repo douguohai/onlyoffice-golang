@@ -36,8 +36,8 @@ type App struct {
 	Id       int64
 	AppId    string    `orm:"unique;description(应用名称)"`
 	CheckUrl string    `orm:"description(核查url)"`
-	Status   int       `orm:"auto_now_add;default:0;description(状态删除 0有效 1无效)"`
-	UpdateAt time.Time `orm:"auto_now_add;type(datetime); description(修改时间)"`
+	Status   int       `orm:"default:0;description(状态删除 0有效 1无效)"`
+	UpdateAt time.Time `orm:"auto_now;type(datetime); description(修改时间)"`
 	CreateAt time.Time `orm:"auto_now_add;type(datetime);description(创建时间)"`
 }
 
