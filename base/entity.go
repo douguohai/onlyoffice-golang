@@ -11,8 +11,8 @@ type Result struct {
 }
 
 type CheckResult struct {
-	Code       interface{} `json:"code"`
-	ErrMessage interface{} `json:"msg"`
+	Code       int    `json:"code"`
+	ErrMessage string `json:"msg"`
 }
 
 func (r Result) ToJSONStr() string {

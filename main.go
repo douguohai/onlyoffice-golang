@@ -84,13 +84,13 @@ func authCheck(ctx *context.Context) {
 			if "" != token {
 				tokens = append(tokens, token)
 			}
-			appId := ctx.Input.Query("AppId")
+			appId := ctx.Input.Query("Appid")
 			if "" != appId {
 				appIds = append(appIds, appId)
 			}
 		} else {
 			tokens = ctx.Request.Header["Token"]
-			appIds = ctx.Request.Header["AppId"]
+			appIds = ctx.Request.Header["Appid"]
 		}
 		if len(tokens) == 0 || len(appIds) == 0 {
 			_ = ctx.JSONResp(base.Result{
